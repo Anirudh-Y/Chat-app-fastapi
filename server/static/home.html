@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+</head>
+<style>
+    form{
+        padding: 50px;
+    }
+</style>
+<body>
+    <form>
+        <div class="mb-3">
+          <label for="exampleInputEmail1" class="form-label">Name</label>
+          <input type="text" class="form-control" id="name" aria-describedby="emailHelp">
+        </div>
+        <div class="mb-3">
+          <label for="exampleInputPassword1" class="form-label">Alias if any</label>
+          <input type="text" class="form-control" id="alias">
+        </div>
+        <button type="submit" id="submit" class="btn btn-primary">To the chat link</button>
+      </form>
+      <form>
+      <div class="mb-3">
+        <label for="exampleInputPassword1" class="form-label">Paste room id here</label>
+        <input type="text" class="form-control" id="roomid">
+      </div>
+      <button type="submit" id="enter" class="btn btn-primary">Enter</button>
+    </form>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<script>
+    const submitbtn = document.getElementById("submit");
+    const namebox = document.getElementById("name")
+    const aliasbox = document.getElementById("alias")
+    const enter = document.getElementById("enter")
+
+    let name="",alias="",roomid="";
+
+    namebox.addEventListener("change",(e)=>{
+        name = e.target.value;
+    })
+    aliasbox.addEventListener("change",(e)=>{
+        alias=e.target.value;
+    })
+
+    submitbtn.addEventListener("click",async (e)=>{
+        e.preventDefault();
+        if(alias.length==0){
+            if(name.length==0){
+                alert("Please type your name or alias")
+                return;
+            }
+            else{
+                let data = await fetch(`http://localhost:8000/roomid/${name}`)
+                let id = await data.json()
+
+                location.replace(`http://localhost:8000/chat/${name}/${id}`)
+            }
+        }
+        else if(alias.length!=0){
+            let data = await fetch(`http://localhost:8000/roomid/${alias}`)
+            let id = await data.json()
+            location.replace(`http://localhost:8000/chat/${alias}/${id}`)
+        }
+
+    })
+
+    roomidbox.addEventListener("change",(e)=>{
+        roomid=e.target.value
+    })
+
+    enter.addEventListener("click",(e)=>{
+        e.preventDefault()
+        if(alias.length==0){
+            if(name.length==0){
+                alert("Please type your name or alias")
+                return;
+            }
+            else{
+
+                location.replace(`http://localhost:8000/chat/${name}/${roomid}`)
+            }
+        }
+        else if(alias.length!=0){
+            location.replace(`http://localhost:8000/chat/${alias}/${roomid}`)
+        }
+    })
+
+</script>
+</html>

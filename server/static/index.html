@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket - client</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+    #messages .clientID {
+        font-weight: bold;
+    }
+    </style>
+</head>
+<body >
+    <main>
+        <div>
+            <h1>Chat App</h1>
+            <h2 id = "room_div_id">Room ID:</h2>
+            <div id="message-box">
+                <!-- Messages will be added here -->
+            </div>
+            <button id="copy_id">Copy room id</button>
+            <button id="logout">Logout</button>
+            <form id="message-form">
+                <div>
+                    <input type="text" id="message" placeholder="Enter your message">
+                    <button type="submit" text-slate-300 border-0 w-1/12 outline-0>Send</button>
+                </div>
+            </form>
+        </div>
+    </main>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<script>
+
+    const messageForm = document.getElementById("message-form");
+    const messageInput = document.getElementById("message");
+    const messageBox = document.getElementById("message-box");
+    const roomdiv = document.getElementById("room_div_id");
+    const copy_id = document.getElementById("copy_id");
+    const logout = document.getElementById("logout");
+
+    copy_id.addEventListener("click",(e)=>{
+
+        // Copy the text inside the text field
+        navigator.clipboard.writeText(url);
+    })
+
+    let url = window.location.href.split('/')[5]
+    let name = window.location.href.split('/')[4]
+
+    let roomdivid = url.substring(0,10)+"...."
+    roomdiv.innerText="Room ID: "+roomdivid;
+
+    const clientID = name;
+    let ws;
+
+    function log_out(){
+        if(ws){
+            ws.close();
+            location.replace("http://localhost:8000/")
+        }
+    }
+
+    async function processMessage(event) {
+        const d = await JSON.parse(event.data);
+        console.log(d);
+        if("all_out" in d){
+            if(d.userID !== name)
+                alert("Owner has logged out")
+            log_out();
+        }
+        console.log(d);
+        const messageEl = document.createElement("div");
+        messageEl.className = "w-full flex justify-start";
+        messageEl.innerHTML = `
+            <div>
+                <p>${d.userID}: ${d.msg}</p>
+            </div>`;
+        messageBox.appendChild(messageEl);
+        messageBox.scrollTop = messageBox.scrollHeight;
+    }
+
+    window.addEventListener("load", (e) => {
+        if (ws) {
+            ws.onmessage = processMessage
+        }
+        else{
+            roomID = url;
+            ws = new WebSocket(`ws://localhost:8000/ws/${roomID}/${name}`)
+            console.log(`ws://localhost:8000/ws/${roomID}/${name}`)
+            ws.onmessage = processMessage
+        }
+    });
+
+    messageForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const message = messageInput.value;
+
+        ws.send(JSON.stringify({ msg: message, userID: name }));
+        messageInput.value = "";
+    });
+
+    logout.addEventListener("click", async (event) => {
+        ws.send(JSON.stringify({ all_out: true, userID: name }))
+        setTimeout(()=>{
+            log_out();
+        },1000)
+
+    })
+
+    window.addEventListener("beforeunload", async () => {
+       await  ws.send(JSON.stringify({ all_out: true, userID: name }));
+        if (ws) {
+            ws.close();
+        }
+    });
+</script>
+</html>

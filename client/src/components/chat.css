@@ -1,0 +1,55 @@
+#message{
+    margin: 10px;
+    width: 500px;
+    overflow: scroll;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+button{
+    border-radius: 5px;
+    border-width: 1px;
+    list-style: none;
+    padding: 6px 10px;
+    margin: 10px;
+}
+
+
+h1{
+    margin: 25px auto;
+    text-align: center;
+
+}
+
+h2{
+    margin: 10px auto;
+    text-align: center;
+}
+
+.btn1{
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.chatbox{
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+}
+
+#message-box{
+    height: 500px;
+    background-color: aliceblue;
+    border: 1px;
+    width: 600px;
+    text-wrap: wrap;
+    overflow: scroll;
+}
+
+.box{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
